@@ -6,7 +6,7 @@ namespace FHIR\Flier\Builder;
 
 use FHIR\Flier\Builder\Operations\AddOperation;
 use FHIR\Flier\Builder\Operations\Operation;
-use FHIR\Flier\Contracts\FHIRIndexedResource;
+use FHIR\FlierStorage\Contracts\FHIRIndexedResource;
 use FHIR\Flier\Drivers\ArrayResourceDriver;
 use FHIR\Flier\Drivers\ResourceDriver;
 use FHIR\Flier\Indexer\SearchIndexer;
@@ -234,6 +234,9 @@ class ResourceBuilder
 
         $resource = new class((string) $id, $type, $data) implements FHIRIndexedResource
         {
+            /**
+             * @param  array<string, mixed>  $resourceData
+             */
             public function __construct(
                 private readonly string $resourceId,
                 private readonly string $resourceType,
@@ -250,6 +253,9 @@ class ResourceBuilder
                 return $this->resourceType;
             }
 
+            /**
+             * @return array<string, mixed>
+             */
             public function getResourceData(): array
             {
                 return $this->resourceData;
