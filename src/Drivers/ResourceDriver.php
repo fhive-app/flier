@@ -19,8 +19,20 @@ use FHIVE\Flier\Builder\Operations\Operation;
 interface ResourceDriver
 {
     /**
-     * Cria o recurso com os dados + operações aplicadas.
-     * Creates the resource with data + applied operations.
+     * PT: Lê um recurso pelo ID (GET /ResourceType/id).
+     * EN: Reads a resource by ID (GET /ResourceType/id).
+     */
+    public function read(string $resourceType, string $id): mixed;
+
+    /**
+     * PT: Lê uma versão específica do recurso (GET /ResourceType/id/_history/vid).
+     * EN: Reads a specific version of the resource (GET /ResourceType/id/_history/vid).
+     */
+    public function vread(string $resourceType, string $id, string $versionId): mixed;
+
+    /**
+     * PT: Cria o recurso com os dados + operações aplicadas.
+     * EN: Creates the resource with data + applied operations.
      *
      * @param  array<string, mixed>  $data
      * @param  list<Operation>  $operations
@@ -28,8 +40,8 @@ interface ResourceDriver
     public function create(string $resourceType, array $data, array $operations): mixed;
 
     /**
-     * Atualiza (patch/merge) o recurso com as operações acumuladas.
-     * Updates (patch/merge) the resource with the accumulated operations.
+     * PT: Atualiza (patch/merge) o recurso com as operações acumuladas.
+     * EN: Updates (patch/merge) the resource with the accumulated operations.
      *
      * @param  array<string, mixed>  $data
      * @param  list<Operation>  $operations
@@ -37,8 +49,8 @@ interface ResourceDriver
     public function update(string $resourceType, array $data, array $operations): mixed;
 
     /**
-     * Substitui o recurso inteiro (PUT semântico).
-     * Replaces the entire resource (PUT semantics).
+     * PT: Substitui o recurso inteiro (PUT semântico).
+     * EN: Replaces the entire resource (PUT semantics).
      *
      * @param  array<string, mixed>  $data
      * @param  list<Operation>  $operations
@@ -46,8 +58,8 @@ interface ResourceDriver
     public function put(string $resourceType, array $data, array $operations): mixed;
 
     /**
-     * Remove o recurso.
-     * Deletes the resource.
+     * PT: Remove o recurso.
+     * EN: Deletes the resource.
      *
      * @param  array<string, mixed>  $data
      */
