@@ -11,14 +11,15 @@ use Illuminate\Support\Facades\Http;
 use InvalidArgumentException;
 
 /**
- * Driver HTTP FHIR usando Laravel Http facade.
- * FHIR HTTP driver using Laravel Http facade.
- *
- * Open-source. Implementa ResourceDriver e SearchDriver.
- * Open-source. Implements ResourceDriver and SearchDriver.
+ * PT: Driver HTTP FHIR usando Laravel Http facade. Suporta bearer token para SMART on FHIR.
+ * EN: FHIR HTTP driver using Laravel Http facade. Supports bearer token for SMART on FHIR.
  *
  * Uso / Usage:
  *   $driver = new FHIRHttpDriver('https://hapi.fhir.org/baseR4');
+ *   $driver = new FHIRHttpDriver('https://fhive.test/fhir', 'eyJ...');
+ *
+ *   // GET — lê recurso / GET — reads resource
+ *   Flier::resource('Patient', ['id' => 'abc'])->useDriver($driver)->read();
  *
  *   // POST — cria com operações / POST — creates with operations
  *   Flier::resource('Patient')->gender('male')->useDriver($driver)->create();
@@ -28,11 +29,47 @@ use InvalidArgumentException;
  */
 final class FHIRHttpDriver implements ResourceDriver, SearchDriver
 {
-    public function __construct(private readonly string $baseUrl) {}
+    /**
+     * @param  string  $baseUrl  PT: URL base do servidor FHIR / EN: FHIR server base URL
+     * @param  string|null  $bearerToken  PT: Token OAuth2 (SMART on FHIR) / EN: OAuth2 token (SMART on FHIR)
+     */
+    public function __construct(
+        private readonly string $baseUrl,
+        private ?string $bearerToken = null,
+    ) {}
+
+    /**
+     * PT: Define ou atualiza o bearer token (fluente).
+     * EN: Sets or updates the bearer token (fluent).
+     */
+    public function withToken(string $token): static
+    {
+        $this->bearerToken = $token;
+
+        return $this;
+    }
 
     // ——————————————————————————————————————————————————————————————————
     // ResourceDriver
     // ——————————————————————————————————————————————————————————————————
+
+    /** {@inheritdoc} */
+    public function read(string $resourceType, string $id): array
+    {
+        return $this->client()
+            ->get("/{$resourceType}/{$id}")
+            ->throw()
+            ->json();
+    }
+
+    /** {@inheritdoc} */
+    public function vread(string $resourceType, string $id, string $versionId): array
+    {
+        return $this->client()
+            ->get("/{$resourceType}/{$id}/_history/{$versionId}")
+            ->throw()
+            ->json();
+    }
 
     /** {@inheritdoc} */
     public function create(string $resourceType, array $data, array $operations): array
@@ -115,9 +152,15 @@ final class FHIRHttpDriver implements ResourceDriver, SearchDriver
 
     private function client(): PendingRequest
     {
-        return Http::withHeaders([
+        $client = Http::withHeaders([
             'Accept' => 'application/fhir+json',
             'Content-Type' => 'application/fhir+json',
         ])->baseUrl(rtrim($this->baseUrl, '/'));
+
+        if ($this->bearerToken !== null) {
+            $client = $client->withToken($this->bearerToken);
+        }
+
+        return $client;
     }
 }

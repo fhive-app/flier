@@ -18,6 +18,18 @@ use FHIVE\Flier\Builder\Operations\ReplaceOperation;
  */
 final class ArrayResourceDriver implements ResourceDriver
 {
+    /** {@inheritdoc} */
+    public function read(string $resourceType, string $id): array
+    {
+        return ['resourceType' => $resourceType, 'id' => $id];
+    }
+
+    /** {@inheritdoc} */
+    public function vread(string $resourceType, string $id, string $versionId): array
+    {
+        return ['resourceType' => $resourceType, 'id' => $id, 'meta' => ['versionId' => $versionId]];
+    }
+
     /**
      * @param  array<string, mixed>  $data
      * @param  list<Operation>  $operations

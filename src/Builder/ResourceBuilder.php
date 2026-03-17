@@ -134,6 +134,40 @@ class ResourceBuilder
     // ——————————————————————————————————————————————————————————————————
 
     /**
+     * PT: Lê o recurso do servidor (GET semântico). Requer 'id' nos dados.
+     * EN: Reads the resource from the server (GET semantics). Requires 'id' in data.
+     */
+    public function read(): mixed
+    {
+        $id = $this->data['id'] ?? throw new \InvalidArgumentException(
+            "Resource must contain 'id' for read.",
+        );
+
+        if ($this->driver !== null) {
+            return $this->driver->read($this->resourceType, (string) $id);
+        }
+
+        return $this->toArray();
+    }
+
+    /**
+     * PT: Lê uma versão específica do recurso (GET semântico). Requer 'id' nos dados.
+     * EN: Reads a specific version of the resource (GET semantics). Requires 'id' in data.
+     */
+    public function vread(string $versionId): mixed
+    {
+        $id = $this->data['id'] ?? throw new \InvalidArgumentException(
+            "Resource must contain 'id' for vread.",
+        );
+
+        if ($this->driver !== null) {
+            return $this->driver->vread($this->resourceType, (string) $id, $versionId);
+        }
+
+        return $this->toArray();
+    }
+
+    /**
      * Cria o recurso (POST semântico).
      * Creates the resource (POST semantics).
      *

@@ -56,8 +56,23 @@ final class Flier
     }
 
     /**
-     * Inicia um builder fluente de busca FHIR.
-     * Starts a fluent FHIR search builder.
+     * PT: Cria um ResourceBuilder com ID preenchido, pronto para read()/vread().
+     * EN: Creates a ResourceBuilder with ID set, ready for read()/vread().
+     *
+     * Uso / Usage:
+     *   Flier::read('Patient', 'abc-123')->useDriver($driver)->read();
+     */
+    public static function read(string $resourceType, string $id): ResourceBuilder
+    {
+        return new ResourceBuilder($resourceType, [
+            'resourceType' => $resourceType,
+            'id' => $id,
+        ]);
+    }
+
+    /**
+     * PT: Inicia um builder fluente de busca FHIR.
+     * EN: Starts a fluent FHIR search builder.
      */
     public static function search(string $resourceType): SearchBuilder
     {
